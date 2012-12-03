@@ -1,0 +1,113 @@
+\section{Requirements}
+
+\subsection{Problem}
+
+\begin{frame}
+\frametitle{Needle in a Haystack}
+
+전산학에서는 스트링(string), 즉 문자열을 다루기 위한 다양한 이론들이 연구되었고 
+이를 이용한 많은 도구들이 만들어 졌다.
+
+그 중에서도 정규 표현식과 그 주위를 둘러싼 이론들,
+정규 표현식을 구현한 아래와 같은 도구들은 전산학 분야의 가장 
+아름다운 보석 중의 하나라고 할 수 있다.
+
+\begin{center}
+text editors, compilers, grep, Perl, \dots
+\end{center}
+
+grep이 없다고 상상해보라. 소프트웨어 엔지니어들은 건초 더미에서 바늘을 찾는 
+수고를 하느라 생산성이 지금의 10분의 1, 100분의 1이 되었을 지도 모른다.
+
+특히 요즘과 같이 처리해야할 데이터의 규모가 엄청난 속도로 증가하는 상황에서
+정규 표현식을 효율적으로 이용하지 못한다면 결코 경쟁력을 가지고 있다고
+말 할 수 없을 것이다.
+
+\end{frame}
+
+\subsection{Regular Exression and Regular Language}
+
+\begin{frame}
+\frametitle{Regular Expression}
+
+Regular expression $re$ is defined inductively.% as follows:
+\[
+\begin{array}{lcll}
+    \mbit{Regex} \ni   re & ::= & \e & \mbox{\rm empty string} \\
+   & | & c & \mbox{\rm single character} \\
+   & | & re \cdot re & \mbox{\rm times} \\
+   & | & re + re & \mbox{plus} \\
+   & | & re^{*} & \mbox{star}
+\end{array}
+\]
+
+\begin{block}{Example}
+    A regualar expression ``\mbtt{a*(b|c)d}'' matches ``\mbtt{aaaaaabc}'', ``\mbtt{abc}'', ``\mbtt{bd}'' and ``\mbtt{cd}''.
+\end{block}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Regular Language}
+
+A regular expression $re$ corresponds with a regular language
+$L(re)$:
+\[
+\begin{array}{rcl}
+  L(\e) & = & \{\e\} \\
+  L(c) & = & \{c\} \\
+  L(\replus) & = & L(\rone) \cup L(\rtwo) \\
+  L(\retimes) & = & L(\rone)L(\rtwo) \\
+  L(\restar) & = & L(re)^{*} \\[3mm]
+  L(\rone)L(\rtwo) & = & \{s_{1}\cdot s_{2} | s_{1}\in L(\rone), s_{2}\in L(\rtwo)\} \\
+  L(re)^{0} & = & \{\e\} \\
+  L(re)^{i+1} & = & L(re)L(re)^{i} \\
+  L(re)^{*} & = & \bigcup_{i\ge 0}L(re)^{i}
+\end{array}
+\]
+
+\begin{block}{Example}
+    \[
+        L(a) = \{a\}, L(b) = \{b\}, L(a+b) = \{a, b\}
+        \]
+\end{block}
+
+\end{frame}
+
+\subsection{Specification of Regular Expression Matcher}
+
+\begin{frame}
+\frametitle{Regular Expression Matcher}
+
+우리가 만들고자 하는 regular expression matcher \M의 
+specification을 다음과 같이 정의하자.
+
+\begin{block}
+
+\[
+    \M : \mbit{Regex} \times \mbit{String} \ra \mbit{Bool}
+\]
+
+In order to be a correct solution of regular expression matcher problem, 
+our regular expression matcher \M{} is supposed to satisfy the following:
+ \[
+    \rmatch{s}{re} = \T \Lra s \in L(re) 
+ \]
+where $s$ is a string and $re$ is a regular expression.
+
+\[
+\begin{array}{lcll}
+    \mbit{String} \ni  s & ::= & \e & \mbox{empty string} \\
+    & | & c \cdot s & \mbox{a character in front of a string}
+\end{array}
+\]
+\end{block}
+
+
+여기에 다음의 조건 하나를 추가 한다.
+\begin{quote}
+수행 시간은 입력의 길이에 선형적으로 비례해야 한다. 
+\end{quote}
+
+\end{frame}

@@ -1,0 +1,76 @@
+\def\doframeit#1{\vbox{%
+  \hrule height\fboxrule
+    \hbox{%
+      \vrule width\fboxrule \kern\fboxsep
+      \vbox{\kern\fboxsep #1\kern\fboxsep }%
+      \kern\fboxsep \vrule width\fboxrule }%
+    \hrule height\fboxrule }}
+
+\def\frameit{\smallskip \advance \linewidth by -50.5pt \setbox0=\vbox
+  \bgroup \strut \ignorespaces }
+
+\def\endframeit{\ifhmode \par \nointerlineskip \fi \egroup
+  \doframeit{\box0}}
+
+\newenvironment{Frame} {\vspace{3mm}\par\begin{frameit}\vspace{-5mm}}
+  {\end{frameit}\vspace{-3mm}}
+
+\newcommand{\mbtt}[1]{\texttt{#1}}
+\newcommand{\mbit}[1]{\textit{#1}}
+\newcommand{\mbrm}[1]{\textrm{#1}}
+
+\newcommand{\REFERENCE}[1]{\vfill\mbox{\tiny Reference: #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\re}{\mbox{\it re}}
+\newcommand{\rtic}{\re'}
+\newcommand{\rticstar}{\rtic^*}
+\newcommand{\rone}{re_{1}}
+\newcommand{\rtwo}{re_{2}}
+\newcommand{\replus}{\rone+\rtwo}
+\newcommand{\retimes}{\rone\cdot\rtwo}
+\newcommand{\restar}{re^{*}}
+
+\newcommand{\nullable}{\mbit{nullable}}
+\newcommand{\first}{\mbit{first}}
+\newcommand{\firstmatch}{\mbit{firstmatch}}
+\newcommand{\Firstmatch}{\mbit{firstmatch'}}
+\newcommand{\suffix}{\mbit{suffix}}
+
+\newcommand{\e}{\epsilon}
+\newcommand{\mtt}[1]{\mbox{\tt #1}}
+\newcommand{\mrm}[1]{\mbox{\rm #1}}
+
+\newcommand{\sem}[1]{[\![#1]\!]}
+\newcommand{\ul}[1]{\underline{#1}}
+
+\newcommand{\F}{\mtt{false}}
+\newcommand{\T}{\mtt{true}}
+\newcommand{\cs}{c\cdot s}
+\newcommand{\abc}{(a+b)^{*}\cdot c}
+\newcommand{\abb}{(a+b)^{*}abb}
+
+%\newcommand{\rmatch}[2]{#1!#2}
+\newcommand{\M}{\mbit{m}}
+\newcommand{\MM}{\mbit{m'}}
+\newcommand{\rmatch}[2]{\M(#2,#1)}
+
+%\newcommand{\rsmatch}[2]{#1!!#2}
+\newcommand{\rsmatch}[2]{\MM(#2,#1)}
+
+\newcommand{\regmatch}{\mrm{regmatch}}
+\newcommand{\regmatchabc}{\mrm{regmatch}_{\abc}}
+\newcommand{\regmatche}{\mrm{regmatch}_{\e}}
+
+\newcommand{\iter}{\mtt{iter}}
+
+\newcommand{\da}{\downarrow}
+\newcommand{\dda}{\da\da}
+\newcommand{\Lra}{\Leftrightarrow}
+\newcommand{\Ra}{\Rightarrow}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\trieq}{\triangleq}
+
+\newcommand{\ifte}[3]{\mrm{if }#1\mrm{ then }#2\mrm{ else }#3}
+\newcommand{\foreach}[3]{\mtt{foreach }#1\mtt{ in }#2\mtt{ do }#3\mtt{ done }}

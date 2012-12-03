@@ -1,0 +1,192 @@
+\section{Design}
+
+\subsection{Matcher with Backtracking}
+
+\begin{frame}
+    \frametitle{설계 전략}
+
+    \begin{itemize}
+    \item State machine보다는 regular expression, regular language의 의미를
+        드러내는 데 적합하게 설계한다.
+    \item 설계, 구현, correctness 증명이 용이한 수학적 함수 형태로 설계 한다.
+    \item Backtracking이 있는 matcher를 먼저 정의 한 후, 
+    동적으로 DFA를 만드는 효과를 가지도록 수정한다.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Definition of Matcher \M{} with Backtracking}
+
+먼저 backtracking이 있는 함수 \M을 정의하자.
+
+\[
+\begin{array}{rcl}
+  \rmatch{\e}{\e} & = & \T \nonumber \\
+  \rmatch{\e}{c} & = & \F \nonumber \\
+  \rmatch{\e}{\replus} & = & \rmatch{\e}{\rone}\vee\rmatch{\e}{\rtwo}
+  \nonumber\\
+  \rmatch{\e}{\retimes} & = & \rmatch{\e}{\rone}\wedge\rmatch{\e}{\rtwo} \nonumber \\
+  \rmatch{\e}{\restar} & = & \T \nonumber \\[2ex]
+  \rmatch{\cs}{re} & = & \mrm{if } \firstmatch(c,re)  \\
+                   &   & \mrm{then } \bigvee_{re'\in\suffix(c,re)}\rmatch{s}{re'} \\
+                   &   & \mrm{else } \F
+\end{array}
+\]
+
+%where the first character match operator $\da$ is 
+%  \[
+%  c\da re  = \ifte{c\in\first(re)}{\T}{\F}
+%  \]
+\M의 정의에 사용한 \suffix, \firstmatch 등은 ``Auxiliary
+Function''에서 정의한다.
+\end{frame}
+
+\subsection{Auxiliary Functions}\label{sec:aux}
+
+\begin{frame}[shrink]
+\frametitle{Auxiliary Function: \nullable}
+
+정규 표현식이 $\e$를 가질 수 있는 지 판정하는 함수 \nullable.
+
+\[
+\begin{array}{rcl}
+  \nullable(\e) & = & \mtt{true} \\
+  \nullable(c) & = & \mtt{false} \\
+  \nullable(\rone+\rtwo) & = & \nullable(\rone) \vee \nullable(\rtwo) \\
+  \nullable(\rone\cdot\rtwo) & = & \nullable(\rone)\wedge\nullable(\rtwo) \\
+  \nullable(re^{*}) & = & \mtt{true}
+\end{array}
+\]  
+
+\begin{block}{Correctness of \nullable}
+ \[
+     \nullable(re) = \mtt{true} \Lra \e \in L(re)
+ \]
+\end{block}
+
+\end{frame}
+
+% \begin{frame}[shrink]
+% \frametitle{Auxiliary Function: \first}
+% 
+% 정규 표현식으로 생성되는 스트링의 첫 글자 집합을 만드는 함수 \first.
+% 
+% \[
+% \begin{array}{rcl}
+%   \first(\e) & = & \varnothing \\
+%   \first(c) & = & \{c\} \\
+%   \first(\rone+\rtwo) & = & \first(\rone) \cup \first(\rtwo) \\
+%   \first(\rone\cdot\rtwo) & = & \mrm{if } \nullable(\rone) \\
+%                           &   & \mrm{then }\first(\rone)\cup\first(\rtwo) \\
+%                           &   & \mrm{else }\first(\rone) \\
+%   \first(re^{*}) & = & \first(re)
+% \end{array}
+% \]
+% 
+% \begin{block}{Correctness of \first}
+%  \[
+%   c\in\first(re)\Lra\exists s\mrm{ such that }\cs\in L(re).%\mrm{ for some string }s
+%  \]
+% \end{block}
+% 
+% \end{frame}
+% 
+\begin{frame}[shrink]
+\frametitle{Auxiliary Function: \firstmatch}
+
+글자 $c$로 시작하는 스트링이 정규 표현식 $re$로 생성되는 $L(re)$에 포함되는 지 알려주는 함수 \firstmatch.
+
+\[
+\begin{array}{rcl}
+  \firstmatch(c,\e) & = & \F \\
+  \firstmatch(c,c') & = & \ifte{c=c'}{\T}{\F} \\
+  \firstmatch(c,\rone+\rtwo) & = & \firstmatch(c,\rone) \vee \firstmatch(c,\rtwo) \\
+  \firstmatch(c,\rone\cdot\rtwo) & = & \mrm{if } \nullable(\rone) \\
+                          &   & \mrm{then }\firstmatch(c,\rone)\vee\firstmatch(c,\rtwo) \\
+                          &   & \mrm{else }\firstmatch(c,\rone) \\
+  \firstmatch(c,re^{*}) & = & \firstmatch(c,re)
+\end{array}
+\]
+
+\begin{block}{Correctness of \firstmatch}
+ \[
+  \firstmatch(c,re)=\T\Lra\exists s\mrm{ such that }\cs\in L(re).%\mrm{ for some string }s
+ \]
+\end{block}
+
+\end{frame}
+
+\begin{frame}[shrink]
+\frametitle{Auxiliary Function: \suffix}
+
+하나의 글자와 match되는 prefix를 뺀 나머지 정규 표현식을 계산하는 함수 \suffix.
+
+    \[
+    \begin{array}{rcl}
+      \suffix(c,\e) & = & \emptyset \\
+      \suffix(c,c)&=&\{\e\} \\
+      \suffix(c,c')&=&\emptyset\mrm{ where }c\neq c' \\
+      \suffix(c,\replus) &=& \suffix(c,\rone) \cup \suffix(c,\rtwo) \\
+
+      \suffix(c,\rone\cdot \rtwo)& = & \{ r\cdot \rtwo \mid r \in
+      \suffix(c,\rone) \} \cup \\
+      &   & (\ifte{\nullable(\rone)}{\suffix(c,\rtwo)}{\emptyset}) \\
+
+%      \suffix(c,\e\cdot re)& = &\suffix(c,re) \\
+%      \suffix(c,c'\cdot re) &=& \ifte{c=c'}{\{re\}}{\emptyset} \\
+%      \suffix(c,(\retimes)\cdot re)& =& \suffix(c,\rone\cdot(\rtwo\cdot re)) \\
+%      \suffix(c,(\replus)\cdot re) &=& \suffix(c,\rone\cdot re)\cup\suffix(c,\rtwo\cdot re) \\
+%      \suffix(c,\rone^{*}\cdot re)& =& \suffix(c,re)\cup \\
+%      &  & (\ifte{c\da\rone^{*}}{\{re'\cdot re|re'\in \suffix(c,\rone^{*})\}}{\emptyset}) \\
+
+      \suffix(c,re^{*}) &=& \mrm{if }\firstmatch(c,re) \\
+                        & & \mrm{then }\{r\cdot re^{*}|r\in\suffix(c,re)\} \\
+                        & & \mrm{else }\emptyset
+    \end{array}
+    \]
+
+\begin{block}{Correctness of \suffix}
+\[
+    \bigcup_{r'\in \suffix(c,r)}L(r') = \{ s | c\cdot s \in L(r) \}
+%    \begin{array}{rcl}
+%    \suffix(c,re)=R\neq\emptyset & \Ra & L(c)(\bigcup_{re'\in R}L(re'))=L(re) \\
+%     \suffix(c,re)=\emptyset & \Lra & c\notin\first(re)
+%  \end{array}
+  \]
+\end{block}
+
+\end{frame}
+
+\subsection{Optimization - Simulating DFA}
+
+\begin{frame}[shrink]
+\frametitle{Thompson's NFA Simulation}
+
+NFA의 한 상태에서 갈 수 있는 다음 상태들의 집합을 하나의 상태로 보는 것이
+NFA를 DFA로 변환하는 기본 아이디어이다.
+
+이 변환을 미리하지 않고 실행 중에 함으로써 backtracking이 일어나지 않는
+regualar expression matcher \MM을 다음과 같이 정의할 수 있다.
+
+    \[
+        \MM  :  2^{\mbit{Regex}} \times \mbit{String} \ra \mbit{Bool}
+    \]
+\[
+  \begin{array}{rcl}
+    \rsmatch{s}{\emptyset} & = & \mtt{false} \\
+    \rsmatch{\e}{R} & = & \bigvee_{re\in R}\nullable(re) \\
+    \rsmatch{\cs}{R} & = & \mrm{if }\Firstmatch(c,R) \\
+                     &   & \mrm{then }\rsmatch{s}{\bigcup_{re\in R}\suffix(c,re)} \\
+                     &   & \mrm{else }{\F} 
+  \end{array}
+\]  
+where $\Firstmatch$ is
+  \begin{eqnarray}
+%    c\dda\emptyset & = & \F \nonumber \\
+%    c\dda R & = & \ifte{c\in\bigcup_{re\in R}\first(re)}{\T}{\F} \nonumber
+    \Firstmatch(c,\emptyset) & = & \F \nonumber \\
+    \Firstmatch(c, R) & = & \bigvee_{re\in R}\firstmatch(c,re) \nonumber
+  \end{eqnarray}
+
+\end{frame}

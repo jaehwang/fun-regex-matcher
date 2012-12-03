@@ -1,0 +1,59 @@
+\section{Coding}
+
+\begin{frame}
+    \frametitle{Development Tools}
+
+    \begin{itemize}
+        \item Programming Language: Scala
+        \item Build Tool: Maven
+        \item Unit Test: ScalaTest
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Matcher \M}
+
+    \small
+    \begin{verbatim}
+def M(re:Regex, s:String):Boolean = (re,destructString(s)) match {
+    case (EmptyRegex(),     None) => true
+    case (CharRegex(_),     None) => false
+    case (PlusRegex(r1,r2) ,None) => M(r1,null) || M(r2,null)
+    case (TimesRegex(r1,r2),None) => M(r1,null) && M(r2,null)
+    case (StarRegex(_),     None) => true
+    case (_,                Some((hd,tl))) => 
+        if (firstmatch(hd,re)) 
+            (suffix(hd,re) foldLeft false) ((b,x) => if(b) b else M(x,tl)) 
+        else 
+            false
+}
+    \end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Matcher \MM}
+
+    \MM은 입력 스트링의 suffix들에 대해 최대 한 번씩만 재귀 호출된다. 
+
+    \small
+    \begin{verbatim}
+type R = Set[Regex]
+
+def firstmatch2(c:Char, r:R):Boolean =
+    if (r.isEmpty) false
+    else (r foldLeft false) ((b,x) => if (b) b else (first(x) contains c))
+
+val e: R = Set.empty
+def suffix2(c:Char, r:R):R = (r foldLeft e) ((x, y) => x | suffix(c, y))
+
+//definition of m' 
+def M(r:R, s:String): Boolean = (r.isEmpty, destructString(s)) match {
+    case (true,None) => true
+    case (_,   None) => (r foldLeft false) ((x,y) => x || hasempty(y))
+    case (_,   Some((hd,tl))) => 
+        if (firstmatch2(hd,r)) M(suffix2(hd,r), tl) else false
+}
+    \end{verbatim}
+
+\end{frame}
