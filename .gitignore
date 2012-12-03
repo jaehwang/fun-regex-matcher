@@ -3,7 +3,7 @@
 .settings/*
 target/*
 tags
-doc/*.vrb  
+doc/*.vrb
 doc/*.aux
 doc/*.log
 doc/*.nav
