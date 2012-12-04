@@ -12,10 +12,10 @@ We use Maven.
 
 * mvn scala:cctest -Dfsc=false
 
-### Testing ###
+## Testing ##
 
 * mvn test
 
-### Running ###
+## Running ##
 
 * mvn scala:run -Dlauncher=...
