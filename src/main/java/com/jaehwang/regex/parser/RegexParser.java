@@ -108,7 +108,14 @@ public class RegexParser {
                 @Override
                 public Regex map(String from) {
                     if(from.startsWith("\\")) {
-                        return new CharRegex(from.charAt(1));
+                        char c = from.charAt(1);
+                        // TODO: we have to handle more special characters.
+                        if(c == 'n') 
+                            return new CharRegex('\n');
+                        else if(c == 't') 
+                            return new CharRegex('\t');
+                        else
+                            return new CharRegex(c);
                     } else {
                         char c = from.charAt(0);
                         if(c=='.') {
