@@ -19,3 +19,11 @@ We use Maven.
 ## Running ##
 
 * mvn scala:run -Dlauncher=...
+
+## Sample Apps ##
+
+### My "really" mini grep ###
+
+* mvn scala:run -Dlauncher=grep -DaddArgs="arg|...|arg"
+
+<code>mvn assembly:assembly</code> creates a executable jar.
