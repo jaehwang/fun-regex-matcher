@@ -26,4 +26,4 @@ We use Maven.
 
 * mvn scala:run -Dlauncher=grep -DaddArgs="arg|...|arg"
 
-<code>mvn assembly:assembly</code> creates a executable jar.
+`mvn assembly:assembly` creates a executable jar.
