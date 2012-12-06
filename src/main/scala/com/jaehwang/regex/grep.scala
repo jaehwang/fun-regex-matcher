@@ -13,7 +13,9 @@ import com.jaehwang.regex.ast._
 object grep {
   
   val usage = """
-    Usage: grep [-r] [-e suffix] pattern filename
+Usage: grep [-r] [-e suffix] pattern filename
+       -r : recursively traverse directory
+       -e suffix : file suffix pattern. e.g. txt, scala, ...
   """
     
   type OptionMap = Map[Symbol, String]
@@ -52,19 +54,26 @@ object grep {
         case files => files.toStream.flatMap(tree(_, skipHidden))
     })  
     
-  def main(args:Array[String]) {     
-
+  def main(args:Array[String]) 
+  {
      val options =  parseArgs(args)
      val files:Stream[File] = 
          if (options.contains('recurse)) {
              val dir:File = new File(options('filename))  
-             // FIXME: filename이 "."인 경우 hidden file로 인식되는 문제가 있음.
-             // Canonical file을 쓰면 "." 대신 canonical path가 출력됨.
-             tree(dir.getCanonicalFile(),true)
+             // tree()는 hidden file을 skip할 수 있음.
+             // dir이 "."인 경우 tree()를 호출하면 hidden으로 처리됨.
+             // 이를 막기 위해 canonical path로 변환할 수 있지만 
+             // 파일명이 길어지는 문제가 있음.
+             // dir이 "." 등 hidden인 경우에도 파일 목록 stream을 만들기 위해
+             // dir.listFiles를 일차로 실행 후 tree()를 호출하도록 함. 
+             dir.listFiles match {
+                case null => Stream.empty
+                case files => files.toStream.flatMap(tree(_, true))
+             }
          } else {
              (new File(options('filename))) #:: Stream.empty
          }
-     
+
      val regexParser:RegexParser = new RegexParser()
      val parser:Parser[Regex]    = regexParser.parser()
      val regex:Regex             = parser.parse(options('pattern))
@@ -72,9 +81,11 @@ object grep {
      
      def matchFileLines(file:File) {      
          try {
-           val source = scala.io.Source.fromFile(file)
+           val source = scala.io.Source.fromFile(file,"UTF-8")
       
-           source.getLines().filter(matcher.accept).foreach(line => println(file+":"+line))
+           source.getLines().zipWithIndex.
+                  filter(e => matcher.accept(e._1)).
+                  foreach(e => println(file+":"+(e._2+1)+":"+e._1))
          } catch {
            // TODO: improve binary file process
            case malformedInput:java.nio.charset.MalformedInputException => Unit
