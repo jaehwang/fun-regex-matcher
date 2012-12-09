@@ -79,16 +79,28 @@ Usage: grep [-r] [-e suffix] pattern filename
      val regex:Regex             = parser.parse(options('pattern))
      val matcher:RegexMatcher    = new DRegexMatcher(regex)
      
+     
      def matchFileLines(file:File) {      
-         try {
-           val source = scala.io.Source.fromFile(file,"UTF-8")
-      
+         try {           
+           import java.io.{InputStream,FileInputStream,BufferedInputStream}           
+           import com.ibm.icu.text.{CharsetDetector,CharsetMatch}
+           
+           val is:InputStream = new BufferedInputStream(new FileInputStream(file))
+           val detector:CharsetDetector = new CharsetDetector()           
+           detector.setText(is)
+           val m:CharsetMatch = detector.detect()
+           val charset:String = m.getName()
+           
+           val source = scala.io.Source.fromInputStream(is,charset)
+           
            source.getLines().zipWithIndex.
                   filter(e => matcher.accept(e._1)).
                   foreach(e => println(file+":"+(e._2+1)+":"+e._1))
          } catch {
            // TODO: improve binary file process
            case malformedInput:java.nio.charset.MalformedInputException => Unit
+           case unsupportedCharset:java.nio.charset.UnsupportedCharsetException => Unit
+           case unmappableCharacter:java.nio.charset.UnmappableCharacterException => Unit
            case e:Exception => e.printStackTrace()
          }
      }

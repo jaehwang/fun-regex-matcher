@@ -35,6 +35,13 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+    	<groupId>com.ibm.icu</groupId>
+    	<artifactId>icu4j</artifactId>
+    	<version>50.1</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <repositories>
