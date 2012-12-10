@@ -6,6 +6,7 @@ import org.codehaus.jparsec.Parser
 
 import com.jaehwang.regex.parser.RegexParser
 import com.jaehwang.regex.ast._
+import java.io.{InputStream,FileInputStream,BufferedInputStream}   
 
 /** Simple grep program based on functional regex matcher.
  * 
@@ -13,8 +14,9 @@ import com.jaehwang.regex.ast._
 object grep {
   
   val usage = """
-Usage: grep [-r] [-e suffix] pattern filename
+Usage: grep [-r] [-b] [-e suffix] pattern filename
        -r : recursively traverse directory
+       -I : ignore binary files
        -e suffix : file suffix pattern. e.g. txt, scala, ...
   """
     
@@ -33,6 +35,7 @@ Usage: grep [-r] [-e suffix] pattern filename
        list match {
          case Nil => map
          case "-r"::tail   => nextOption(map++Map('recurse -> "true"),tail)
+         case "-I"::tail   => nextOption(map++Map('ignorebinary -> "true"),tail)
          case "-e"::suffix::tail => nextOption(map++Map('suffix -> suffix),tail)
          case pattern::filename::Nil  => nextOption(map++Map('pattern -> pattern,'filename -> filename),Nil)
          case option::tail => println("Unkown option:"+option)
@@ -53,7 +56,35 @@ Usage: grep [-r] [-e suffix] pattern filename
         case null  => Stream.empty // listFiles returns null for a non-directory
         case files => files.toStream.flatMap(tree(_, skipHidden))
     })  
-    
+  
+  /**
+   * TODO: more accurate & efficient binary detection
+   */
+  def file_is_binary(is:InputStream):Boolean = {
+      if (!is.markSupported()) false
+      
+      val readlimit:Int = 1024
+      
+      is.mark(readlimit)
+          
+      var idx = 0
+      while(idx<readlimit) {
+         var b:Int = is.read()
+         if(b<0) {
+           is.reset()
+           return false
+         }
+         
+         if(b==0) {
+            is.reset()
+            return true
+         }
+         idx = idx+1
+      }
+      is.reset()
+      false
+    }
+  
   def main(args:Array[String]) 
   {
      val options =  parseArgs(args)
@@ -73,19 +104,24 @@ Usage: grep [-r] [-e suffix] pattern filename
          } else {
              (new File(options('filename))) #:: Stream.empty
          }
-
+     
+     val ignore_binary_files = options.contains('ignorebinary)
+       
      val regexParser:RegexParser = new RegexParser()
      val parser:Parser[Regex]    = regexParser.parser()
      val regex:Regex             = parser.parse(options('pattern))
-     val matcher:RegexMatcher    = new DRegexMatcher(regex)
-     
+     val matcher:RegexMatcher    = new DRegexMatcher(regex)     
      
      def matchFileLines(file:File) {      
-         try {           
-           import java.io.{InputStream,FileInputStream,BufferedInputStream}           
+         try {     
            import com.ibm.icu.text.{CharsetDetector,CharsetMatch}
            
            val is:InputStream = new BufferedInputStream(new FileInputStream(file))
+           
+           val is_binary = file_is_binary(is)
+           
+           if(ignore_binary_files && is_binary) return
+           
            val detector:CharsetDetector = new CharsetDetector()           
            detector.setText(is)
            val m:CharsetMatch = detector.detect()
@@ -93,17 +129,21 @@ Usage: grep [-r] [-e suffix] pattern filename
            
            val source = scala.io.Source.fromInputStream(is,charset)
            
-           source.getLines().zipWithIndex.
+           if(is_binary && source.getLines().zipWithIndex.
+                  filter(e => matcher.accept(e._1)).length > 0)            
+               println("Binary file "+file+" matches")
+            else 
+               source.getLines().zipWithIndex.
                   filter(e => matcher.accept(e._1)).
-                  foreach(e => println(file+":"+(e._2+1)+":"+e._1))
-         } catch {
-           // TODO: improve binary file process
+                  foreach(e => println(file+":"+(e._2+1)+":"+e._1))                  
+         } catch {           
            case malformedInput:java.nio.charset.MalformedInputException => Unit
            case unsupportedCharset:java.nio.charset.UnsupportedCharsetException => Unit
            case unmappableCharacter:java.nio.charset.UnmappableCharacterException => Unit
            case e:Exception => e.printStackTrace()
          }
      }
+     
      def checkSuffix:File=>Boolean = 
        if (options.contains('suffix)) {
          val suffix = options('suffix)
