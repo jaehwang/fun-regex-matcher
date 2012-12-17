@@ -1,4 +1,4 @@
-# Functional Regualar Expression Matcher #
+# Functional Regualar Expression Matcher for Fun #
 
 We implement three kinds of regular expression matchers:
 
