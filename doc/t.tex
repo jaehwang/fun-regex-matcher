@@ -31,12 +31,6 @@ for (my $ssize = 1; $ssize<=30; $ssize++) {
 \begin{frame}
     \frametitle{Test Results}
 
-NFA 기반의 정규 표현식 구현은 backtracking이 많은 경우에는 치명적인
-성능 문제를 일으킬 잠재적인 위험이 있다.
-
-우리의 구현 \MM은 backtracking이 없기 때문에 입력값의 길이에 선형적으로
-비례하는 수행 시간을 보여 준다.
-
 \[
     \rmatch{a}{a?a},  \rmatch{aa}{a?a?aa}, \dots,
     \rmatch{a^{30}}{(a?)^{30}a^{30}}
@@ -52,5 +46,8 @@ NFA 기반의 정규 표현식 구현은 backtracking이 많은 경우에는 치
 \caption{왼쪽은 Perl과 \MM의 결과를 함께 보여주고, 오른쪽은 \MM의
     결과만 보여준다.}
 \end{figure}
- 
+
+정규 표현식의 크기가 $m$, 스트링의 길이가 $n$일 때,
+우리의 regular expression matcher는 $O(mn)$의 time complexity를 가진다.
+
 \end{frame}

@@ -35,7 +35,7 @@ microsenconds인 점을 주목하라.
 
 Figure \ref{fig:graph}의 결과는 backtracking의 존재 여부에 따른 것이다.
 오늘날 거의 대부분의 프로그래밍 언어들은 속도 보다는 backreference 등의 기능을 
-제공하기 위해  NFA 기반의 정규 표현식 구현을 채택하고
+제공하기 위해 NFA와 backtracking 기반의 정규 표현식 구현을 채택하고
 있다.
 
 \begin{block}{Example}
@@ -65,11 +65,21 @@ match된다는 것을 알 수 있다. 하지만 NFA 기반 정규 표현식 matc
 \frametitle{수행 시간이 입력의 크기에 선형적으로 비례하는 Regular Expression Matcher}
 
 실제 정규 표현식의 적용에서 backreference 등 유연하고 
-다양한 feature가 필요 없는 경우가 많다.
+다양한 feature가 필요 없는 경우가 많다. 
+느린 수행 시간은 ReDoS\footnote{\href{http://en.wikipedia.org/wiki/ReDos}{Regular expression denial of service}}와 
+같은 보안 취약점이 될 수도 있다.
 여기서 speed, reliability 등이 보장되는 regular expression matcher의 
-필요성이 대두 된다.
+필요성이 대두 된다. 
 
-개발자에게 하나의 선택권만 주는 것 보다는 하나의 옵션을 더 제공함으로써
-요구사항에 맞는 기능을 개발할 수 있게 할 필요가 있다.
+정규 표현식 $re$의 크기(혹은 NFA 상태 수) $m$, 
+입력 스트링의 길이를 $n$이라고 할 때, $re$를 FA로 변환하고 match하는 경우의
+time complexity이다:
 
+\begin{itemize}
+\item NFA : $O(m) + O(2^n)$
+\item DFA : $O(m2^m) + O(n)$
+\end{itemize}
+
+우리가 원하는 regular expression matcher는 $O(2^n)$이나 $O(m2^n)$ 같은 것이
+없어야 한다.
 \end{frame}

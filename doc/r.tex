@@ -83,7 +83,7 @@ $L(re)$:
 우리가 만들고자 하는 regular expression matcher \M의 
 specification을 다음과 같이 정의하자.
 
-\begin{block}
+\begin{block}{Requirement 1}
 
 \[
     \M : \mbit{Regex} \times \mbit{String} \ra \mbit{Bool}
@@ -92,7 +92,7 @@ specification을 다음과 같이 정의하자.
 In order to be a correct solution of regular expression matcher problem, 
 our regular expression matcher \M{} is supposed to satisfy the following:
  \[
-    \rmatch{s}{re} = \T \Lra s \in L(re) 
+    \mbrm{Req 1.}\ \rmatch{s}{re} = \T \Lra s \in L(re) 
  \]
 where $s$ is a string and $re$ is a regular expression.
 
@@ -104,10 +104,8 @@ where $s$ is a string and $re$ is a regular expression.
 \]
 \end{block}
 
-
-여기에 다음의 조건 하나를 추가 한다.
-\begin{quote}
-수행 시간은 입력의 길이에 선형적으로 비례해야 한다. 
-\end{quote}
+\begin{block}{Requirement 2}
+수행 시간은 $|re|$, $|s|$에 지수적으로 비례해서 길어지는 경우가 없어야 한다.
+\end{block}
 
 \end{frame}
