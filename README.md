@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jaehwang/fun-regex-matcher.png)](https://travis-ci.org/jaehwang/fun-regex-matcher)
+
 # Functional Regualar Expression Matcher for Fun #
 
 We implement three kinds of regular expression matchers:
