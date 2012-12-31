@@ -25,7 +25,6 @@ import org.codehaus.jparsec.functors.Binary;
 import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Unary;
 import org.codehaus.jparsec.pattern.CharPredicate;
-import org.codehaus.jparsec.pattern.Patterns;
 
 import com.jaehwang.regex.ast.Regex;
 import com.jaehwang.regex.ast.CharRegex;
@@ -88,14 +87,16 @@ public class RegexParser {
                         }
                      }).source()).source();
 
-    final Parser<?> TOKENIZER = OPERATORS.tokenizer()
-                     .or(escape)
-                     .or(Scanners.isChar(new CharPredicate(){
-                        //@Override
-                        public boolean isChar(char c) {
-                            return true;//Character.isLetterOrDigit(c);
-                        }
-                     }).source());
+    // TODO: Are the type castings the best solution?
+    final Parser<?> TOKENIZER = Parsers.or(
+            OPERATORS.tokenizer(),
+            (Parser<?>)escape,
+            (Parser<?>)Scanners.isChar(new CharPredicate(){
+                //@Override
+                public boolean isChar(char c) {
+                    return true;//Character.isLetterOrDigit(c);
+                }
+            }).source());
     
     final Parser<Void> IGNORED = Parsers.or(Scanners.JAVA_LINE_COMMENT, 
                                             Scanners.JAVA_BLOCK_COMMENT, 
