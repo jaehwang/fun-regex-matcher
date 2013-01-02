@@ -32,7 +32,7 @@ import com.jaehwang.regex.ast.PlusRegex;
 import com.jaehwang.regex.ast.StarRegex;
 import com.jaehwang.regex.ast.TimesRegex;
 import com.jaehwang.regex.ast.AnyRegex;
-import com.jaehwang.regex.ast.EmptyRegex;
+import com.jaehwang.regex.ast.EpsilonRegex;
 
 /** Regular expression parser.
  *
@@ -66,7 +66,7 @@ public class RegexParser {
         },
         ONEZERO {
             public Regex map(Regex a) {
-                return new PlusRegex(a, new EmptyRegex());
+                return new PlusRegex(a, new EpsilonRegex());
             }
         }
     }

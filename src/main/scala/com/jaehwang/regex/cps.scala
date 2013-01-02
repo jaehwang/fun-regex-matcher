@@ -31,10 +31,10 @@ class CPSMatcher(regex:Regex) extends RegexMatcher(regex) {
 
     def delta(r:Regex):Regex = {
         val zero  = ZeroRegex()
-        val one   = EmptyRegex()
+        val one   = EpsilonRegex()
         r match {
             case ZeroRegex()       => zero
-            case EmptyRegex()      => one
+            case EpsilonRegex()      => one
             case AnyRegex()        => zero
             case CharRegex(_)      => zero
             case PlusRegex(r1,r2)  => {
@@ -51,7 +51,7 @@ class CPSMatcher(regex:Regex) extends RegexMatcher(regex) {
 
     def standardize(r:Regex):Regex = r match {
         case ZeroRegex()       => ZeroRegex()
-        case EmptyRegex()      => ZeroRegex()
+        case EpsilonRegex()      => ZeroRegex()
         case AnyRegex()        => r
         case CharRegex(_)      => r
         case PlusRegex(r1, r2) => PlusRegex(standardize(r1),standardize(r2))
@@ -71,7 +71,7 @@ class CPSMatcher(regex:Regex) extends RegexMatcher(regex) {
     def acc(r:Regex, s:String, k:String=>Boolean):Boolean = {
         r match {
             case ZeroRegex()       => false
-            case EmptyRegex()      => k(s)
+            case EpsilonRegex()      => k(s)
             case AnyRegex()        => destructString(s) match {
                 case None          => false
                 case Some((hd,tl)) => k(tl)
@@ -91,7 +91,7 @@ class CPSMatcher(regex:Regex) extends RegexMatcher(regex) {
 
     def accept(s:String):Boolean = {
         def S(r:Regex):Regex = r match {
-            case ZeroRegex() | EmptyRegex() | AnyRegex() | CharRegex(_)              
+            case ZeroRegex() | EpsilonRegex() | AnyRegex() | CharRegex(_)              
                                            => r
 
             case PlusRegex(r1,ZeroRegex()) => S(r1)

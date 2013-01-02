@@ -34,7 +34,7 @@ abstract class RegexMatcher(regex:Regex) {
     def accept(s:String):Boolean;
 
     def nullable(regex:Regex):Boolean = regex match {
-      case EmptyRegex()    => true
+      case EpsilonRegex()    => true
       case AnyRegex()      => false
       case CharRegex(_)    => false
       case PlusRegex(a,b)  => nullable(a) || nullable(b)
@@ -43,7 +43,7 @@ abstract class RegexMatcher(regex:Regex) {
     }
 
     def firstmatch (c:Char, re:Regex):Boolean = re match {
-      case EmptyRegex()    => false
+      case EpsilonRegex()    => false
       case AnyRegex()      => true
       case CharRegex(d)    => c == d
       case PlusRegex(a,b)  => if (firstmatch(c,a)) true else firstmatch(c,b)
@@ -63,14 +63,14 @@ abstract class RegexMatcher(regex:Regex) {
        * 모든 times에서 epsilon을 빼는 최적화 코드 개발이 필요할까?
        */
       def mkTimesRegex(r1:Regex, r2:Regex):Regex = r1 match {
-        case EmptyRegex() => r2 
+        case EpsilonRegex() => r2 
         case _            => TimesRegex(r1,r2)
       }
 
       regex match {
-        case EmptyRegex()      => empty
-        case AnyRegex()        => Set(EmptyRegex())
-        case CharRegex(d)      => if (c==d) Set(EmptyRegex()) else empty
+        case EpsilonRegex()      => empty
+        case AnyRegex()        => Set(EpsilonRegex())
+        case CharRegex(d)      => if (c==d) Set(EpsilonRegex()) else empty
         case PlusRegex(r1,r2)  => suffix(c,r1) | suffix(c,r2)
         case TimesRegex(r1,r2) => ((suffix(c,r1) foldLeft empty) ((s,x) => s + mkTimesRegex(x,r2))) | 
                                   (if (nullable(r1)) suffix(c,r2) else empty)
@@ -86,7 +86,7 @@ class NRegexMatcher(regex:Regex) extends RegexMatcher(regex) {
 
     def accept(s:String):Boolean = {
         def M(re:Regex, s:String):Boolean = (re,destructString(s)) match {
-            case (EmptyRegex(),     None) => true
+            case (EpsilonRegex(),     None) => true
             case (AnyRegex(),       None) => false
             case (CharRegex(_),     None) => false
             case (PlusRegex(r1,r2) ,None) => M(r1,null) || M(r2,null)
@@ -111,7 +111,7 @@ class NRegexMatcherO1(regex:Regex) extends NRegexMatcher(regex) {
     override def suffix (c:Char, regex:Regex):Set[Regex] = {
       def suffix_times(c:Char, r1:Regex, r2:Regex):Set[Regex] = 
         r1 match {
-          case EmptyRegex()        => suffix(c,r2)
+          case EpsilonRegex()        => suffix(c,r2)
           case AnyRegex()          => Set(r2)
           case CharRegex(d)        => if (c==d) Set(r2) else Set.empty
           case TimesRegex(rr1,rr2) => 
@@ -125,9 +125,9 @@ class NRegexMatcherO1(regex:Regex) extends NRegexMatcher(regex) {
         }
      
       regex match {
-        case EmptyRegex()      => Set.empty
-        case AnyRegex()        => Set(EmptyRegex())
-        case CharRegex(d)      => if(c==d) Set(EmptyRegex()) else Set.empty
+        case EpsilonRegex()      => Set.empty
+        case AnyRegex()        => Set(EpsilonRegex())
+        case CharRegex(d)      => if(c==d) Set(EpsilonRegex()) else Set.empty
         case PlusRegex(r1,r2)  => suffix(c,r1) | suffix(c,r2)
         case TimesRegex(r1,r2) => suffix_times(c,r1,r2)
         case StarRegex(r)      => if (firstmatch(c,r)) 

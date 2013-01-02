@@ -61,14 +61,14 @@ class AuxTest extends FunSuite {
 
   test("nullable") {
 
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
 
-    assert(matcher.nullable(EmptyRegex()) === true)
+    assert(matcher.nullable(EpsilonRegex()) === true)
     assert(matcher.nullable(CharRegex('a')) === false)
   }
 
   test("firstmatch plus") {
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
 
     val charA = CharRegex('a')
     val charB = CharRegex('b')
@@ -77,7 +77,7 @@ class AuxTest extends FunSuite {
   }
 
   test("firstmatch times") {
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
 
     val charA = CharRegex('a')
     val charB = CharRegex('b')
@@ -87,7 +87,7 @@ class AuxTest extends FunSuite {
   }
 
   test("firstmatch star") {
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
 
     val charA = CharRegex('a')
     val charB = CharRegex('b')
@@ -99,12 +99,12 @@ class AuxTest extends FunSuite {
   }
 
   test("firstmatch any") {
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
     assert(matcher.firstmatch('a',AnyRegex()))
   }
 
   test("suffix char") {
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
 
     val charB = CharRegex('b')
     val s = matcher.suffix ('a', charB)
@@ -113,18 +113,18 @@ class AuxTest extends FunSuite {
   }
 
   test("suffix plus") {
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
 
     val charA = CharRegex('a')
     val charB = CharRegex('b')
 
     val s = matcher.suffix ('a', PlusRegex(charA,charB))
 
-    assert(s contains EmptyRegex())
+    assert(s contains EpsilonRegex())
   }
 
   test("suffix times") {
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
 
     val charA = CharRegex('a')
     val charB = CharRegex('b')
@@ -134,7 +134,7 @@ class AuxTest extends FunSuite {
   }
 
   test("suffix star") {
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
 
     val charA = CharRegex('a')
     val star = StarRegex(charA)
@@ -146,7 +146,7 @@ class AuxTest extends FunSuite {
   }
 
   test("suffix: a, a*b") {
-    val matcher:NRegexMatcher = new NRegexMatcher(EmptyRegex())
+    val matcher:NRegexMatcher = new NRegexMatcher(EpsilonRegex())
 
     val charA = CharRegex('a')
     val charB = CharRegex('b')
