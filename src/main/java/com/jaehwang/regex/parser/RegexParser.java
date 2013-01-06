@@ -35,7 +35,9 @@ import com.jaehwang.regex.ast.AnyRegex;
 import com.jaehwang.regex.ast.EpsilonRegex;
 
 /** Regular expression parser.
- *
+ * 
+ * We could not help but created Java code because of lazy() method call.
+ * 
  * @author Jaehwang Kim (kim.jaehwang@gmail.com)
  */
 public class RegexParser {
