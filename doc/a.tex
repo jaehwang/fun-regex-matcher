@@ -77,9 +77,9 @@ time complexity이다:
 
 \begin{itemize}
 \item NFA : $O(m) + O(2^n)$
-\item DFA : $O(m2^m) + O(n)$
+\item DFA : $O(m^3 \times 2^m) + O(n)$
 \end{itemize}
 
-우리가 원하는 regular expression matcher는 $O(2^n)$이나 $O(m2^n)$ 같은 것이
+우리가 원하는 regular expression matcher는 $O(2^n)$이나 $O(m^3 \times 2^n)$ 같은 것이
 없어야 한다.
 \end{frame}

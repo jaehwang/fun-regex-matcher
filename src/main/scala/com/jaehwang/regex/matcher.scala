@@ -86,7 +86,7 @@ class NRegexMatcher(regex:Regex) extends RegexMatcher(regex) {
 
     def accept(s:String):Boolean = {
         def M(re:Regex, s:String):Boolean = (re,destructString(s)) match {
-            case (EpsilonRegex(),     None) => true
+            case (EpsilonRegex(),   None) => true
             case (AnyRegex(),       None) => false
             case (CharRegex(_),     None) => false
             case (PlusRegex(r1,r2) ,None) => M(r1,null) || M(r2,null)
@@ -111,7 +111,7 @@ class NRegexMatcherO1(regex:Regex) extends NRegexMatcher(regex) {
     override def suffix (c:Char, regex:Regex):Set[Regex] = {
       def suffix_times(c:Char, r1:Regex, r2:Regex):Set[Regex] = 
         r1 match {
-          case EpsilonRegex()        => suffix(c,r2)
+          case EpsilonRegex()      => suffix(c,r2)
           case AnyRegex()          => Set(r2)
           case CharRegex(d)        => if (c==d) Set(r2) else Set.empty
           case TimesRegex(rr1,rr2) => 
@@ -138,6 +138,8 @@ class NRegexMatcherO1(regex:Regex) extends NRegexMatcher(regex) {
     }
 }
 
+/* suffix() with memoize
+ */
 class NRegexMatcherO2(regex:Regex) extends NRegexMatcher(regex) {
 
     import scala.collection.mutable
@@ -167,7 +169,7 @@ class DRegexMatcher(regex:Regex) extends RegexMatcher(regex) {
 
   type R = Set[Regex]
 
- private def firstmatch2(c: Char, r:R): Boolean =
+  private def firstmatch2(c: Char, r:R): Boolean =
     if (r.isEmpty) {
       false
     } else {

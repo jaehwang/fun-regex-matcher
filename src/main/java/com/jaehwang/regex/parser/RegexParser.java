@@ -37,6 +37,7 @@ import com.jaehwang.regex.ast.EpsilonRegex;
 /** Regular expression parser.
  * 
  * We could not help but created Java code because of lazy() method call.
+ * In Scala source code, lazy is a reserved word.
  * 
  * @author Jaehwang Kim (kim.jaehwang@gmail.com)
  */
