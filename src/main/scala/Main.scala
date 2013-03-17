@@ -95,7 +95,6 @@ object DRegexTime {
       (System.currentTimeMillis() - start)/(count*1000.0)
     }
 
-
     def main(args:Array[String]) {
       val cnt = 10
       for(ssize <- 1 to 60) { 
