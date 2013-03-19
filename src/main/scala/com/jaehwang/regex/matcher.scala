@@ -85,6 +85,7 @@ abstract class RegexMatcher(regex:Regex) {
 class NRegexMatcher(regex:Regex) extends RegexMatcher(regex) {
 
     def accept(s:String):Boolean = {
+
         def M(re:Regex, s:String):Boolean = (re,destructString(s)) match {
             case (EpsilonRegex(),   None) => true
             case (AnyRegex(),       None) => false
