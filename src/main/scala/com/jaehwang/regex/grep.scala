@@ -41,7 +41,7 @@ Usage: grep [-r] [-b] [-e suffix] pattern filename
     // http://stackoverflow.com/questions/2315912/scala-best-way-to-parse-command-line-parameters-cli
     if (args.length == 0) {
        println(usage)
-       exit(1)
+       sys.exit(1)
      }
        
      val arglist = args.toList     
@@ -54,7 +54,7 @@ Usage: grep [-r] [-b] [-e suffix] pattern filename
          case "-e"::suffix::tail => nextOption(map++Map('suffix -> suffix),tail)
          case pattern::filename::Nil  => nextOption(map++Map('pattern -> pattern,'filename -> filename),Nil)
          case option::tail => println("Unkown option:"+option)
-                              exit(1)
+                              sys.exit(1)
        }
      }
      nextOption(Map(),arglist)

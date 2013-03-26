@@ -4,6 +4,8 @@ version := "1.0"
 
 scalaVersion := "2.9.2"
 
+scalacOptions ++= Seq("-deprecation")
+
 libraryDependencies += "jparsec" % "jparsec" % "2.0.1"
 
 libraryDependencies += "com.ibm.icu" % "icu4j" % "50.1"
